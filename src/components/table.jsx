@@ -1,17 +1,19 @@
 import React from "react";
 
-const Table = () => {
+import User from "./user";
+
+const Table = ({ users, setRefresh, refresh }) => {
   return (
-    <div className="mt-16 shadow p-5 rounded-lg">
-      <div className="flex justify-between">
-        <input type="checkbox" className="checkbox" />
-        <h1>Зураг</h1>
-        <h1>Нэр</h1>
-        <h1>Овог</h1>
-        <h1>Төрсөн он сар</h1>
-        <h1>Хэлтэс</h1>
-        <h1>Үйлдлүүд</h1>
-      </div>
+    <div className="mt-16 shadow rounded-lg">
+      <ul className="flex px-5">
+        <li className="w-1/6">Зураг</li>
+        <li className="w-1/6">Нэр</li>
+        <li className="w-1/6">Овог</li>
+        <li className="w-1/6">Төрсөн он сар</li>
+        <li className="w-1/6">Хэлтэс</li>
+        <li className="w-1/6">Үйлдлүүд</li>
+      </ul>
+      <User users={users} setRefresh={setRefresh} refresh={refresh} />
     </div>
   );
 };
