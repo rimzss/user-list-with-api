@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
+import Ask from "./Ask";
 
-const User = ({ users, setRefresh, refresh }) => {
+const User = ({ users, setRefresh, refresh, handleUpdate }) => {
+  const [deleteSure, setDeleteSure] = useState(false);
   const deleteUser = async (id) => {
     try {
       const { message } = await fetch(`http://localhost:8008/api/users/${id}`, {
@@ -14,6 +16,7 @@ const User = ({ users, setRefresh, refresh }) => {
       console.log(error);
     } finally {
       setRefresh(!refresh);
+      setDeleteSure(false);
     }
   };
 
@@ -30,13 +33,29 @@ const User = ({ users, setRefresh, refresh }) => {
             <h1 className="w-1/6">{user.birthDate}</h1>
             <h1 className="w-1/6">{user.department}</h1>
             <div className="w-1/6">
-              <button className="btn btn-primary mr-3 w-1/3">edit</button>
+              <button
+                className="btn mr-3 w-1/3"
+                onClick={() => {
+                  handleUpdate(user.id);
+                }}
+              >
+                edit
+              </button>
               <button
                 className="btn btn-error w-1/3"
-                onClick={deleteUser.bind(this, user.id)}
+                onClick={() => {
+                  setDeleteSure(true);
+                }}
+                // onClick={deleteUser.bind(this, user.id)}
               >
                 Delete
               </button>
+              <Ask
+                setDeleteSure={setDeleteSure}
+                deleteSure={deleteSure}
+                userId={user.id}
+                deleteUser={deleteUser}
+              />
             </div>
           </ul>
         );

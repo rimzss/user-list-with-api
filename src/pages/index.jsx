@@ -9,11 +9,13 @@ export default function Home() {
   const [count, setCount] = useState(0);
   const [refresh, setRefresh] = useState(false);
   const [userList, setUserList] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const closeForm = () => {
     setOpen(false);
     setCount(5);
     setRefresh(!refresh);
+    setSelectedUser(null);
   };
 
   const getAllUser = async () => {
@@ -22,6 +24,12 @@ export default function Home() {
     );
     setUserList(users);
   };
+  const handleUpdate = async (userId) => {
+    setOpen(true);
+    const updateUser = userList.filter((user) => user.id === userId);
+    console.log(userId, updateUser);
+    setSelectedUser(updateUser[0]);
+  };
 
   useEffect(() => {
     getAllUser();
@@ -29,8 +37,18 @@ export default function Home() {
   return (
     <main className="bg-[#f5f5f5] p-10 w-screen h-screen">
       <SearchBar count={count} setOpen={setOpen} />
-      <Table users={userList} setRefresh={setRefresh} refresh={refresh} />
-      <Form open={open} closeForm={closeForm} />
+      <Table
+        users={userList}
+        setRefresh={setRefresh}
+        refresh={refresh}
+        handleUpdate={handleUpdate}
+      />
+      <Form
+        open={open}
+        closeForm={closeForm}
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
+      />
     </main>
   );
 }

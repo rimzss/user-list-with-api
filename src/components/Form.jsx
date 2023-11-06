@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
-const Form = ({ open, closeForm }) => {
+const Form = ({ open, closeForm, setSelectedUser, selectedUser }) => {
   const [imgData, setImgData] = useState(null);
   const [isLoading, setIsloading] = useState(false);
 
   const [formData, setFormData] = useState({
     avatarUrl: "",
-    firstName: "",
+    name: "",
     lastName: "",
     email: "",
     birthDate: "",
@@ -14,19 +14,38 @@ const Form = ({ open, closeForm }) => {
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (selectedUser) {
+      console.log("inputing", e.target.value);
+      setSelectedUser({ ...selectedUser, [e.target.name]: e.target.value });
+    } else {
+      console.log("INPUTING", e.target.value);
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
   };
 
   const saveData = async () => {
     try {
       setIsloading(true);
-      const { message } = await fetch("http://localhost:8008/api/users/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      if (selectedUser) {
+        const { message } = await fetch(
+          "http://localhost:8008/api/users/" + selectedUser.id,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(selectedUser),
+          }
+        );
+      } else {
+        const { message } = await fetch("http://localhost:8008/api/users/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+      }
     } catch (error) {
       console.log("ERR", error);
     } finally {
@@ -36,10 +55,12 @@ const Form = ({ open, closeForm }) => {
   };
 
   return (
-    <dialog className={`modal`} open={open}>
+    <dialog className={`modal bg-black bg-opacity-50`} open={open}>
       <div className="modal-box bg-white">
         <h3 className="font-bold text-lg text-center">
-          Шинэ хэрэглэгч нэмэх форм
+          {selectedUser
+            ? "Хэрэглэгч мэдээлэл засах форм "
+            : "Шинэ хэрэглэгч нэмэх форм"}
         </h3>
         <form className="space-y-4">
           <div>
@@ -52,6 +73,7 @@ const Form = ({ open, closeForm }) => {
               placeholder="нэрээ оруулна уу"
               className="w-full input input-bordered input-primary bg-white"
               onChange={handleChange}
+              value={selectedUser ? selectedUser.name : formData.name}
             />
           </div>
           <div>
@@ -64,6 +86,7 @@ const Form = ({ open, closeForm }) => {
               placeholder="овог оруулна уу"
               className="w-full input input-bordered input-primary bg-white"
               onChange={handleChange}
+              value={selectedUser ? selectedUser.lastName : formData.lastName}
             />
           </div>
           <div>
@@ -76,6 +99,7 @@ const Form = ({ open, closeForm }) => {
               placeholder="таны имэйл"
               className="w-full input input-bordered input-primary bg-white"
               onChange={handleChange}
+              value={selectedUser ? selectedUser.email : formData.email}
             />
           </div>
           <div>
@@ -88,6 +112,7 @@ const Form = ({ open, closeForm }) => {
               placeholder="төрсөн он сараа оруулна уу"
               className="w-full input input-bordered input-primary bg-white"
               onChange={handleChange}
+              value={selectedUser ? selectedUser.birthDate : formData.birthDate}
             />
           </div>
           <div>
@@ -98,6 +123,9 @@ const Form = ({ open, closeForm }) => {
               name="department"
               className="select select-primary w-full max-w-xs bg-white"
               onChange={handleChange}
+              value={
+                selectedUser ? selectedUser.department : formData.department
+              }
             >
               <option disabled selected>
                 Та хэлтэсээ сонгоно уу
@@ -133,7 +161,7 @@ const Form = ({ open, closeForm }) => {
           </button>
           <button className="btn btn-primary" onClick={saveData}>
             {isLoading && <span className="loading loading-spinner"></span>}
-            Add
+            Save
           </button>
         </div>
       </div>
